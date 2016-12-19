@@ -21,7 +21,11 @@ const getUrl = (url, param = {}, type = 'hash', animationType = 1) => {
     }
   }
 
-  result = `${url}${result.replace(/&$/, '')}`
+  if (/^https?:\/\//.test(url)) {
+    result = `${url}${result.replace(/&$/, '')}`
+  } else {
+    result = `${location.origin}${url}${result.replace(/&$/, '')}` 
+  }
 
   // 如果在饿了么 APP 中，自动添加 eleme 的 scheme
   if (/Eleme/.test(navigator.userAgent)) {
