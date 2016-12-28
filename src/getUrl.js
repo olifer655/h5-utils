@@ -1,5 +1,8 @@
 /**
- * @param url {String} - 路由（E.g https://h5.ele.me/sales/，http/https 必须要）
+ * @param url {String} - 路由
+ * absolute path: https://h5.ele.me/sales/a/, http/https is required
+ * OR
+ * relative path: /sales/ or ../a or ./a
  * @param param {Object} - 路由中所带的参数
  * @param type {String} - hash || search （hash is default.）
  * @param animationType {Number} - 页面打开方式——0： 新页面自下而上压进, 1：新页面自右向左压进
@@ -8,6 +11,13 @@
 
 const getUrl = (url, param = {}, type = 'hash', animationType = 1) => {
   let result = ''
+
+  let checkUrl = url => {
+    let parser = document.createElement('a')
+
+    parser.href = url
+    return parser.href
+  }
 
   if (JSON.stringify(param) !== '{}') {
     result = type === 'hash' ? '#' : '?'
@@ -21,11 +31,11 @@ const getUrl = (url, param = {}, type = 'hash', animationType = 1) => {
     }
   }
 
-  if (/^https?:\/\//.test(url)) {
-    result = `${url}${result.replace(/&$/, '')}`
-  } else {
-    result = `${location.origin}${url}${result.replace(/&$/, '')}` 
+  if (!/^https?:\/\//.test(url)) {
+    url = checkUrl(url)
   }
+
+  result = `${url}${result.replace(/&$/, '')}`
 
   // 如果在饿了么 APP 中，自动添加 eleme 的 scheme
   if (/Eleme/.test(navigator.userAgent)) {
